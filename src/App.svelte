@@ -1,3 +1,39 @@
+<div class=title>
+	<h1>Talking counters</h1>
+	<div class=language>
+		<div>language</div>
+		<select on:change="{changeVoice}" bind:value={voice}>
+			{#each voices as voice, i}
+			<option value={voice}>{voice.name}</option>
+			{/each}
+		</select>
+	</div>
+</div>
+{#each counters as counter, i}
+	<div>
+		<Counter data={counter} on:counterChanged={gotValue(i)}/>
+		<button on:click={deleteCounter(i)}>rem</button>
+	</div>
+{/each}
+<input bind:value="{newName}"/>
+{newName}
+<button on:click={addCounter}>
+	Add Counter
+</button>
+<div>
+	Voices
+</div>
+<style>
+	.title {
+		display: block;
+	}
+	.title>h1 {
+		display: inline-block;
+	}
+	.title>.language {
+		display: inline-block;
+	}
+</style>
 <script>
 	import Counter from './Counter.svelte';
 	import { utteranceLangApp } from './lang.js';
@@ -37,6 +73,13 @@
 			},500)
 		}
 	}
+	function deleteCounter(i){
+		return (event) => {
+			setTimeout(()=>{
+				counters = counters.filter( (c,j) => i !== j);
+			},500)
+		}
+	}
 	function changeVoice(event){
 		clearTimeout(speakTo);
 		speakTo = setTimeout(()=>{
@@ -51,21 +94,3 @@
 	}
 	
 </script>
-
-<h1>Talking counters</h1>
-{#each counters as counter, i}
-	<Counter data={counter} on:counterChanged={gotValue(i)}/>
-{/each}
-<input bind:value="{newName}"/>
-{newName}
-<button on:click={addCounter}>
-	Add Counter
-</button>
-<div>
-	Voices
-</div>
-<select on:change="{changeVoice}" bind:value={voice}>
-	{#each voices as voice, i}
-	<option value={voice}>{voice.name}</option>
-	{/each}
-</select>{voice? voice.name : ''}
