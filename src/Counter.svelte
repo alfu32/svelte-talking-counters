@@ -4,9 +4,12 @@
     <div class="button" on:click={inc}>+</div>
     <div class="button" on:click={dec}>-</div>
   </div>
-	<span class=number>
-  {data.value}
-	</span>
+  <span class=number>
+    {data.value}
+  </span>
+  <label class=auto>
+    <input type=checkbox bind:checked={auto}>auto
+  </label>
 </div>
 <script>
 	import { createEventDispatcher } from 'svelte';
@@ -14,6 +17,8 @@
 	const dispatch = createEventDispatcher();
 
 	export let data;
+	export let auto;
+	autodec();
 	function inc(){
 		data.value++;
 		dispatch('counterChanged', {data, text: utteranceLangCounter(data).up });
@@ -22,16 +27,37 @@
 		data.value--;
 		dispatch('counterChanged', {data, text: utteranceLangCounter(data).down });
 	}
+	function autodec(){
+		setTimeout(
+			() => {
+				if(auto){
+					if(data.value > 0) {
+						data.value--;
+						dispatch('counterChanged', { data, text:utteranceLangCounter(data).simple });
+					} else {
+						dispatch('counterChanged', { data, text:utteranceLangCounter(data).finish });
+						auto = null;
+					}
+				}
+				autodec();
+			},
+			3000,
+		)
+	}
 </script>
 <style>
 	div.counter{
-		display: block;
+		display: inline-block;
 	}
 	.counter>.stack{
 		display: inline-block;
 	}
 	.counter>.number{
-		font-size: 32px
+		font-size: 32px;
+		display: inline-block;
+	}
+	.counter>.auto{
+		display: inline-block;
 	}
 	.counter>.stack>.button {
     box-shadow: inset 0px 0px 1px #FFF, 0px 0px 1px #444;
